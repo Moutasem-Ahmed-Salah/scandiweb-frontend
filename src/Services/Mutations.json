@@ -1,0 +1,14 @@
+{
+    "UPDATE_CART_ITEM_MUTATION": {
+      "mutation": "mutation Mutation($orderId: Int!, $quantity: Int!, $color: String, $size: String, $capacity: String, $usbPort: String, $touchId: String) {\n  UpdateCartItem(orderID: $orderId, quantity: $quantity, color: $color, size: $size, capacity: $capacity, usb_port: $usbPort, touch_id: $touchId)\n}"
+    },
+    "DELETE_CART_ITEM_MUTATION": {
+      "mutation": "mutation Mutation($orderId: Int!) {\n  DeleteCartItem(orderID: $orderId)\n}"
+    },
+    "QUICK_SHOP_MUTATION": {
+      "mutation": "mutation QuickAddToCart($productId: String!) {\n  quickAddToCart(productID: $productId)\n}"
+    },
+    "ADD_TO_CART_MUTATION": {
+      "mutation": "mutation AddToCart(\n  $productId: String!\n  $quantity: Int!\n  $color: String\n  $size: String\n  $capacity: String\n  $usbPort: String\n  $touchId: String\n) {\n  addToCart(\n    productID: $productId\n    quantity: $quantity\n    color: $color\n    size: $size\n    capacity: $capacity\n    usb_port: $usbPort\n    touch_id: $touchId\n  ) {\n    orderID\n    price_per_unit\n    productID\n    name\n    first_image\n    currency_symbol\n    color\n    capacity\n    quantity\n    size\n    touch_id\n    usb_port\n  }\n}"
+    }
+  }
