@@ -8,7 +8,6 @@ import ProductDetails from "./Components/ProductDetails";
 import CartModal from "./Modals/CartModal";
 import "./App.css";
 
-
 const client = new ApolloClient({
   uri: "http://localhost/graphql.php",
 

@@ -1,6 +1,6 @@
 {
     "UPDATE_CART_ITEM_MUTATION": {
-      "mutation": "mutation Mutation($orderId: Int!, $quantity: Int!, $color: String, $size: String, $capacity: String, $usbPort: String, $touchId: String) {\n  UpdateCartItem(orderID: $orderId, quantity: $quantity, color: $color, size: $size, capacity: $capacity, usb_port: $usbPort, touch_id: $touchId)\n}"
+      "mutation": "mutation Mutation($orderId: Int!, $quantity: Int!) {\n  UpdateCartItem(orderID: $orderId, quantity: $quantity)\n}"
     },
     "DELETE_CART_ITEM_MUTATION": {
       "mutation": "mutation Mutation($orderId: Int!) {\n  DeleteCartItem(orderID: $orderId)\n}"

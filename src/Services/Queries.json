@@ -7,5 +7,8 @@
     },
     "PRODUCTDETAILS_QUERY": {
       "query": "query ProductDetails($productDetailsId: String!) {\n  productDetails(id: $productDetailsId) {\n    attributes {\n      name\n      values\n    }\n    currency_label\n    currency_symbol\n    description\n    images\n    name\n    price\n    in_stock\n  }\n}"
+    },
+    "ATTRIBUTES_QUERY": {
+      "query": "query ProductDetails($productDetailsId: String!) {\n  productDetails(id: $productDetailsId) {\n    attributes {\n      name\n      values\n    }\n  }\n}"
     }
   }
