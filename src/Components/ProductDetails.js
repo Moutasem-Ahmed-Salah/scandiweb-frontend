@@ -4,7 +4,11 @@ import { useQuery, gql, useMutation } from "@apollo/client";
 import Queries from "../Services/Queries.json";
 import Mutations from "../Services/Mutations.json";
 import DOMPurify from "dompurify";
+import Popup from "../Modals/Popup";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { IoIosWarning } from "react-icons/io";
+import { FaCheckCircle } from "react-icons/fa";
+
 
 const colorClassMap = {
   black: "bg-black",
@@ -33,6 +37,9 @@ const processAttributes = (attributes) => {
 function ProductDetails() {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const [showValidation, setShowValidation] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [currenticon, setIcon] = useState(null);
 
   const { data, loading, error } = useQuery(PRODUCTDETAILS_QUERY, {
     variables: { productDetailsId: productId },
@@ -47,15 +54,33 @@ function ProductDetails() {
   function handleAddToCart() {
     // Validate required attributes
     if (attributes.color && !selectedColor) {
-      alert("Please select a color.");
+      if (attributes.capacity && !selectedSize) {
+        setShowValidation(true);
+        setValidationMessage("Please select a color and capacity.");
+        setIcon("IoIosWarning");
+        return;
+      }
+      setShowValidation(true);
+      setValidationMessage("Please select a color.");
+      setIcon("IoIosWarning");
       return;
     }
     if (attributes.size && !selectedSize) {
-      alert("Please select a size.");
+      setShowValidation(true);
+      setValidationMessage("Please select a size.");
+      setIcon("IoIosWarning");
       return;
     }
     if (attributes.capacity && !selectedCapacity) {
-      alert("Please select a capacity.");
+      if (attributes.color && !selectedColor) {
+        setShowValidation(true);
+        setValidationMessage("Please select a color and capacity.");
+        setIcon("IoIosWarning");
+        return;
+      }
+      setShowValidation(true);
+      setValidationMessage("Please select a capacity.");
+      setIcon("IoIosWarning");
       return;
     }
 
@@ -77,13 +102,18 @@ function ProductDetails() {
 
     addToCart({ variables })
       .then((result) => {
-        alert(`Added ${quantity} items to the cart!`);
+        setShowValidation(true);
+        setValidationMessage("Added to cart "+quantity+" items successfully");
+        setIcon("FaCheckCircle");
       })
       .catch((error) => {
         console.error("Caught error:", error);
         alert("Failed to add to cart. Please try again.");
       });
   }
+
+  
+
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -103,12 +133,7 @@ function ProductDetails() {
     return () => clearTimeout(timer); // Cleanup the timer
   }, [currentImageIndex]);
 
-  useEffect(() => {
-    if (data && data.productDetails.in_stock === false) {
-      alert("Product is out of stock"); //this can act like a guard if user tries to access the product manually by changing the URL
-      navigate("/");
-    }
-  }, [data]);
+
 
   const attributes = data?.productDetails?.attributes
     ? processAttributes(data.productDetails.attributes)
@@ -314,15 +339,28 @@ function ProductDetails() {
                 dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
               />
             </div>
-
-            <button
-              onClick={() => handleAddToCart(quantity, productId)}
-              className="bg-green-500 text-white px-6 py-2 w-3/4 rounded-lg hover:bg-green-300 hover:scale-105  transition-colors duration-300"
-            >
-              Add to Cart
-            </button>
+            {data.productDetails.in_stock ? (
+              <button
+                onClick={() => handleAddToCart(quantity, productId)}
+                className="bg-green-500 text-white px-6 py-2 w-3/4 rounded-lg hover:bg-green-600 hover:scale-105  transition-colors duration-300"
+              >
+                Add to Cart
+              </button>
+            ) : (
+              <button className="bg-gray-300 text-gray-600 px-6 py-2 w-3/4 rounded-lg cursor-not-allowed">
+                Out of Stock
+              </button>
+            )}
           </div>
         </div>
+      )}
+      {showValidation && (
+        <Popup
+          icon={currenticon==="IoIosWarning"?IoIosWarning:FaCheckCircle}
+          message={validationMessage}
+          showPopup={showValidation}
+          onClose={() => setShowValidation(false)}
+        />
       )}
     </div>
   );

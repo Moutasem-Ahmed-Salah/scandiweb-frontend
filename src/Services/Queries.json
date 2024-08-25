@@ -1,14 +1,14 @@
 {
-    "VIEW_CART_QUERY": {
-      "query": "query Cart {\n  cart {\n    capacity\n    color\n    currency_symbol\n    first_image\n    name\n    orderID\n    price_per_unit\n    productID\n    quantity\n    size\n    touch_id\n    usb_port\n  }\n}"
-    },
-    "PRODUCTS_QUERY": {
-      "query": "query Products($categoryName: String) {\n  products(categoryName: $categoryName) {\n    name\n    in_stock\n    images\n    product_id\n    price\n    currency_label\n    currency_symbol\n    first_image\n  }\n}"
-    },
-    "PRODUCTDETAILS_QUERY": {
-      "query": "query ProductDetails($productDetailsId: String!) {\n  productDetails(id: $productDetailsId) {\n    attributes {\n      name\n      values\n    }\n    currency_label\n    currency_symbol\n    description\n    images\n    name\n    price\n    in_stock\n  }\n}"
-    },
-    "ATTRIBUTES_QUERY": {
-      "query": "query ProductDetails($productDetailsId: String!) {\n  productDetails(id: $productDetailsId) {\n    attributes {\n      name\n      values\n    }\n  }\n}"
-    }
+  "VIEW_CART_QUERY": {
+    "query": "query Cart {\n  cart {\n    capacity\n    color\n    currency_symbol\n    first_image\n    name\n    cartitemID\n    price_per_unit\n    productID\n    quantity\n    size\n    touch_id\n    usb_port\n  }\n}"
+  },
+  "PRODUCTS_QUERY": {
+    "query": "query Products($categoryName: String) {\n  products(categoryName: $categoryName) {\n    name\n    in_stock\n    images\n    product_id\n    price\n    currency_label\n    currency_symbol\n    first_image\n  }\n}"
+  },
+  "PRODUCTDETAILS_QUERY": {
+    "query": "query ProductDetails($productDetailsId: String!) {\n  productDetails(id: $productDetailsId) {\n    attributes {\n      name\n      values\n    }\n    currency_label\n    currency_symbol\n    description\n    images\n    name\n    price\n    in_stock\n  }\n}"
+  },
+  "ATTRIBUTES_QUERY": {
+    "query": "query Attributes {\n  getAllAttributes {\n    product_id\n    attributes {\n      name\n      values\n    }\n  }\n}"
   }
+}

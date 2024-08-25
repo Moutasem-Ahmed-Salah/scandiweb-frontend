@@ -11,7 +11,7 @@ const PRODUCTS_QUERY = gql`
 `;
 
 const QUICK_SHOP_MUTATION = gql`
-  ${Mutations.QUICK_SHOP_MUTATION.mutation}
+  ${Mutations.QUICK_ADD_TO_CART_MUTATION.mutation}
 `;
 
 function HomePage({ category, isChanging, setIsChanging }) {
@@ -29,10 +29,8 @@ function HomePage({ category, isChanging, setIsChanging }) {
     return () => clearTimeout(timer);
   }, [data]);
 
-  const handleImageClick = (productId, inStock) => {
-    if (inStock) {
-      navigate(`/product/${productId}`);
-    }
+  const handleImageClick = (productId) => {
+    navigate(`/product/${productId}`);
   };
 
   const handleQuickShop = (e, productId) => {
@@ -59,9 +57,9 @@ function HomePage({ category, isChanging, setIsChanging }) {
               key={product.product_id}
               className={`relative flex flex-col items-center transition-opacity duration-300 hover:border hover:border-green-500 rounded-lg  ${
                 isChanging ? "opacity-0" : "opacity-100"
-              } ${!product.in_stock ? "pointer-events-none" : ""}`}
+              } `}
               onClick={() =>
-                handleImageClick(product.product_id, product.in_stock)
+                handleImageClick(product.product_id)
               }
               onMouseEnter={() => setHoveredProductId(product.product_id)}
               onMouseLeave={() => setHoveredProductId(null)}
@@ -75,13 +73,13 @@ function HomePage({ category, isChanging, setIsChanging }) {
                   <img
                     src={product.first_image}
                     alt={product.name}
-                    className={`w-full h-full object-cover rounded-lg transition-transform duration-300 mt-2 ${
+                    className={`w-full h-full object-cover rounded-lg hover:scale-110 transition-transform duration-300 mt-2 ${
                       !product.in_stock ? "opacity-50" : "hover:scale-110"
                     }`}
                   />
                 )}
                 {!product.in_stock && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-red-400 text-2xl font-bold">
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-red-400 text-2xl font-bold hover:scale-110 transition-transform duration-300">
                     Out of Stock
                   </div>
                 )}
@@ -109,3 +107,4 @@ function HomePage({ category, isChanging, setIsChanging }) {
 }
 
 export default HomePage;
+  

@@ -1,14 +1,17 @@
 {
-    "UPDATE_CART_ITEM_MUTATION": {
-      "mutation": "mutation Mutation($orderId: Int!, $quantity: Int!) {\n  UpdateCartItem(orderID: $orderId, quantity: $quantity)\n}"
-    },
-    "DELETE_CART_ITEM_MUTATION": {
-      "mutation": "mutation Mutation($orderId: Int!) {\n  DeleteCartItem(orderID: $orderId)\n}"
-    },
-    "QUICK_SHOP_MUTATION": {
-      "mutation": "mutation QuickAddToCart($productId: String!) {\n  quickAddToCart(productID: $productId)\n}"
-    },
-    "ADD_TO_CART_MUTATION": {
-      "mutation": "mutation AddToCart(\n  $productId: String!\n  $quantity: Int!\n  $color: String\n  $size: String\n  $capacity: String\n  $usbPort: String\n  $touchId: String\n) {\n  addToCart(\n    productID: $productId\n    quantity: $quantity\n    color: $color\n    size: $size\n    capacity: $capacity\n    usb_port: $usbPort\n    touch_id: $touchId\n  ) {\n    orderID\n    price_per_unit\n    productID\n    name\n    first_image\n    currency_symbol\n    color\n    capacity\n    quantity\n    size\n    touch_id\n    usb_port\n  }\n}"
-    }
+  "PLACE_ORDER_MUTATION": {
+    "mutation": "mutation PlaceOrder($total: Float!) { placeOrder(total: $total) }"
+  },
+  "DELETE_CART_ITEM_MUTATION": {
+    "mutation": "mutation DeleteCartItem($cartitemId: Int!) { DeleteCartItem(cartitemID: $cartitemId) }"
+  },
+  "ADD_TO_CART_MUTATION": {
+    "mutation": "mutation AddToCart($productId: String!, $color: String, $size: String, $quantity: Int!, $capacity: String, $usbPort: String, $touchId: String) { addToCart(productID: $productId, color: $color, size: $size, quantity: $quantity, capacity: $capacity, usb_port: $usbPort, touch_id: $touchId) { cartitemID productID name price_per_unit quantity currency_symbol color size capacity first_image usb_port touch_id } }"
+  },
+  "QUICK_ADD_TO_CART_MUTATION": {
+    "mutation": "mutation QuickAddToCart($productId: String!) { quickAddToCart(productID: $productId) }"
+  },
+  "UPDATE_CART_ITEM_MUTATION": {
+    "mutation": "mutation UpdateCartItem($cartitemId: Int!, $quantity: Int!) { UpdateCartItem(cartitemID: $cartitemId, quantity: $quantity) }"
   }
+}
