@@ -46,7 +46,7 @@ const CartModal = ({ showModal, setShowModal, setCartNumber }) => {
   const [updateCartItem] = useMutation(UPDATE_CART_ITEM_MUTATION);
   const [placeOrder] = useMutation(PLACE_ORDER_MUTATION);
   const [showValidation, setShowValidation] = useState(false);
-  const [validationMessage, setValidationMessage] = useState(
+  const [validationMessage] = useState(
     "Order placed successfully",
   );
 

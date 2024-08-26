@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQuery, gql, useMutation } from "@apollo/client";
 import Queries from "../Services/Queries.json";
 import Mutations from "../Services/Mutations.json";
@@ -36,7 +36,6 @@ const processAttributes = (attributes) => {
 
 function ProductDetails() {
   const { productId } = useParams();
-  const navigate = useNavigate();
   const [showValidation, setShowValidation] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
   const [currenticon, setIcon] = useState(null);

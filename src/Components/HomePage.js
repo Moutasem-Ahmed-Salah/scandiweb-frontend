@@ -27,7 +27,7 @@ function HomePage({ category, isChanging, setIsChanging }) {
     setIsChanging(true);
     const timer = setTimeout(() => setIsChanging(false), 300);
     return () => clearTimeout(timer);
-  }, [data]);
+  }, [data, category, setIsChanging]);
 
   const handleImageClick = (productId) => {
     navigate(`/product/${productId}`);
@@ -40,7 +40,7 @@ function HomePage({ category, isChanging, setIsChanging }) {
 
   useEffect(() => {
     if (isChanging) navigate("/");
-  }, [isChanging]);
+  }, [isChanging, navigate]);
 
   if (error) return <pre>{error.message}</pre>;
 
