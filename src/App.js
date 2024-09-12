@@ -28,13 +28,19 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// const client = new ApolloClient({
-//   link: ApolloLink.from([errorLink, httpLink]),
-//   cache: new InMemoryCache(),
-// });
+// HTTP link with headers
+const httpLink = new HttpLink({
+  uri:
+    process.env.REACT_APP_GRAPHQL_ENDPOINT ||
+    "http://206.81.5.10/scandiweb-backend/public/graphql.php",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
+// Apollo Client setup
 const client = new ApolloClient({
-  uri: "http://206.81.5.10/scandiweb-backend/public/graphql.php",
+  link: ApolloLink.from([errorLink, httpLink]),
   cache: new InMemoryCache(),
 });
 
