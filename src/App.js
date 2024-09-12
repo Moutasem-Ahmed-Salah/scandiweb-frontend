@@ -106,7 +106,10 @@ function App() {
             <FaShopify />
           </li>
           <li className="absolute top-0 right-16 text-2xl hover:scale-125 transition-transform duration-300 hover:text-green-600">
-            <MdAddShoppingCart onClick={() => setShowModal(true)} />
+            <MdAddShoppingCart
+              data-testid="cart-btn"
+              onClick={() => setShowModal(true)}
+            />
             <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
               {cartNumber}
             </span>
