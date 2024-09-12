@@ -30,9 +30,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 // HTTP link with headers
 const httpLink = new HttpLink({
-  uri:
-    process.env.REACT_APP_GRAPHQL_ENDPOINT ||
-    "https://moutasemahmed.ninja/graphql.php",
+  uri: "https://moutasemahmed.ninja/graphql.php",
   headers: {
     "Content-Type": "application/json",
   },
