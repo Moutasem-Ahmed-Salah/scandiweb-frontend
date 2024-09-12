@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  ApolloProvider,
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import { ApolloLink } from "@apollo/client";
 import { FaShopify } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
 import { useRoutes, useNavigate } from "react-router-dom";
@@ -8,9 +15,26 @@ import ProductDetails from "./Components/ProductDetails";
 import CartModal from "./Modals/CartModal";
 import "./App.css";
 
-const client = new ApolloClient({
-  uri: "http://localhost/graphql.php",
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+      ),
+    );
+  }
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+  }
+});
 
+// const client = new ApolloClient({
+//   link: ApolloLink.from([errorLink, httpLink]),
+//   cache: new InMemoryCache(),
+// });
+
+const client = new ApolloClient({
+  uri: "http://206.81.5.10/scandiweb-backend/public/graphql.php",
   cache: new InMemoryCache(),
 });
 

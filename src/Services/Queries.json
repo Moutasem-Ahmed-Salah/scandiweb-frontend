@@ -5,8 +5,8 @@
   "PRODUCTS_QUERY": {
     "query": "query Products($categoryName: String) {\n  products(categoryName: $categoryName) {\n    name\n    in_stock\n    images\n    product_id\n    price\n    currency_label\n    currency_symbol\n    first_image\n  }\n}"
   },
-  "PRODUCTDETAILS_QUERY": {
-    "query": "query ProductDetails($productDetailsId: String!) {\n  productDetails(id: $productDetailsId) {\n    attributes {\n      name\n      values\n    }\n    currency_label\n    currency_symbol\n    description\n    images\n    name\n    price\n    in_stock\n  }\n}"
+ "PRODUCTDETAILS_QUERY": {
+    "query": "query ProductDetails($productDetailsId: String!) {\n  productDetails(id: $productDetailsId) {\n    product_id\n    in_stock\n    name\n    price\n    currency_label\n    currency_symbol\n    description\n    first_image\n    category {\n      id\n      name\n    }\n    images\n    attributes {\n      name\n      values\n    }\n  }\n}"
   },
   "ATTRIBUTES_QUERY": {
     "query": "query Attributes {\n  getAllAttributes {\n    product_id\n    attributes {\n      name\n      values\n    }\n  }\n}"
