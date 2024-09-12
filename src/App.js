@@ -32,7 +32,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 const httpLink = new HttpLink({
   uri:
     process.env.REACT_APP_GRAPHQL_ENDPOINT ||
-    "http://206.81.5.10/scandiweb-backend/public/graphql.php",
+    "https://moutasemahmed.ninja/graphql.php",
   headers: {
     "Content-Type": "application/json",
   },
