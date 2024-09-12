@@ -1,26 +1,21 @@
 import React, { useState } from "react";
-import {
-  ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  ApolloProvider,
-} from "@apollo/client";
-import { onError } from "@apollo/client/link/error";
-import { ApolloLink } from "@apollo/client";
-import { FaShopify } from "react-icons/fa";
-import { MdAddShoppingCart } from "react-icons/md";
 import { useRoutes, useNavigate } from "react-router-dom";
 import HomePage from "./Components/HomePage";
 import ProductDetails from "./Components/ProductDetails";
 import CartModal from "./Modals/CartModal";
 import "./App.css";
+import { ApolloClient, InMemoryCache, HttpLink, ApolloLink, ApolloProvider } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import { FaShopify } from "react-icons/fa";
+import { MdAddShoppingCart } from "react-icons/md";
 
+// Error handling link
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) =>
       console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-      ),
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
     );
   }
   if (networkError) {
@@ -47,30 +42,16 @@ function App() {
   const [isChanging, setIsChanging] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [cartNumber, setCartNumber] = useState(0);
+
   const navigate = useNavigate();
 
-  const handleCategoryChange = (categoryName) => {
-    if (category !== categoryName) {
-      setIsChanging(true);
-      setTimeout(() => {
-        setCategory(categoryName);
-        setIsChanging(false);
-        navigate("/"); // Navigate to home page
-      }, 300); // This delay should match the transition duration
-    }
+  const handleCategoryChange = (cat) => {
+    setCategory(cat);
+    navigate(cat ? `/category/${cat}` : "/");
   };
 
   const routes = useRoutes([
-    {
-      path: "/",
-      element: (
-        <HomePage
-          category={category}
-          isChanging={isChanging}
-          setIsChanging={setIsChanging}
-        />
-      ),
-    },
+    { path: "/", element: <HomePage setCategory={setCategory} /> },
     { path: "/product/:productId", element: <ProductDetails /> },
   ]);
 
@@ -95,6 +76,7 @@ function App() {
                   className={`absolute w-full h-[2px] bg-green-600 left-0 -bottom-0.5 transition-transform duration-300 ${
                     category === cat ? "scale-x-100" : "scale-x-0"
                   }`}
+                  data-testid={category === cat ? "active-category-link" : "category-link"}
                 ></span>
               </button>
             </li>
@@ -124,10 +106,9 @@ function App() {
         <CartModal
           showModal={showModal}
           setShowModal={setShowModal}
-          setCartNumber={setCartNumber}
         />
-        {routes}
       </div>
+      {routes}
     </ApolloProvider>
   );
 }
