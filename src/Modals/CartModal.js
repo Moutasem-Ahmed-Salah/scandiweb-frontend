@@ -63,7 +63,7 @@ class CartModal extends Component {
       setCartNumber(data.cart.length);
       const calculatedTotal = data.cart.reduce(
         (acc, item) => acc + item.price_per_unit * item.quantity,
-        0
+        0,
       );
       this.setState({ total: calculatedTotal });
     } else {
@@ -83,7 +83,7 @@ class CartModal extends Component {
             }
             return acc;
           },
-          {}
+          {},
         );
       }
     });
@@ -124,7 +124,9 @@ class CartModal extends Component {
             showModal ? "scale-100" : "scale-0"
           } origin-top-right z-50`}
         >
-          <h2 className="text-xl font-semibold mb-4 text-black">Shopping Cart</h2>
+          <h2 className="text-xl font-semibold mb-4 text-black">
+            Shopping Cart
+          </h2>
           {loading && (
             <div className="flex justify-center items-center h-32">
               <AiOutlineLoading3Quarters className="animate-spin text-green-600 text-4xl" />
@@ -212,7 +214,9 @@ class CartModal extends Component {
 
                     {itemAttributes.capacity && (
                       <div>
-                        <h2 className="text-lg font-semibold mb-2">CAPACITY:</h2>
+                        <h2 className="text-lg font-semibold mb-2">
+                          CAPACITY:
+                        </h2>
                         <div
                           className="flex space-x-2"
                           data-testid={`cart-item-attribute-capacity`}
@@ -321,9 +325,7 @@ class CartModal extends Component {
 }
 
 const CartModalWithQueries = (props) => {
-  const { data, loading, error } = useQuery(VIEW_CART_QUERY, {
-    pollInterval: 500,
-  });
+  const { data, loading, error } = useQuery(VIEW_CART_QUERY);
   const { data: attributeData } = useQuery(ATTRIBUTE_QUERY);
   const [deleteCartItem] = useMutation(DELETE_CART_ITEM_MUTATION);
   const [updateCartItem] = useMutation(UPDATE_CART_ITEM_MUTATION);
