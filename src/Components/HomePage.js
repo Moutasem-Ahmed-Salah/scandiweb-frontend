@@ -5,6 +5,7 @@ import { FaCartArrowDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Queries from "../Services/Queries.json";
 import Mutations from "../Services/Mutations.json";
+import { CartContext } from "../Contexts/CartContext";
 
 const PRODUCTS_QUERY = gql`
   ${Queries.PRODUCTS_QUERY.query}

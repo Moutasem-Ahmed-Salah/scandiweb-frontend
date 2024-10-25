@@ -1,22 +1,12 @@
 import React, { Component } from "react";
 import { useQuery, gql, useMutation } from "@apollo/client";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { FaCheckCircle, FaTrashAlt } from "react-icons/fa";
-import Popup from "./Popup"; // Import the Popup component
+import { FaCheckCircle, FaTrashAlt, FaCheck } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
+import Popup from "./Popup";
 import Queries from "../Services/Queries.json";
 import Mutations from "../Services/Mutations.json";
-
-const UPDATE_CART_ITEM_MUTATION = gql`
-  ${Mutations.UPDATE_CART_ITEM_MUTATION.mutation}
-`;
-
-const DELETE_CART_ITEM_MUTATION = gql`
-  ${Mutations.DELETE_CART_ITEM_MUTATION.mutation}
-`;
-
-const VIEW_CART_QUERY = gql`
-  ${Queries.VIEW_CART_QUERY.query}
-`;
+import { CartContext } from "../Contexts/CartContext";
 
 const ATTRIBUTE_QUERY = gql`
   ${Queries.ATTRIBUTES_QUERY.query}
@@ -42,34 +32,7 @@ class CartModal extends Component {
       showValidation: false,
       validationMessage: "Order placed successfully",
     };
-    this.handleUpdate = this.handleUpdate.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
     this.handlePlaceOrder = this.handlePlaceOrder.bind(this);
-  }
-
-  componentDidMount() {
-    this.updateCartData();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.data !== this.props.data) {
-      this.updateCartData();
-    }
-  }
-
-  updateCartData() {
-    const { data, setCartNumber } = this.props;
-    if (data && data.cart) {
-      setCartNumber(data.cart.length);
-      const calculatedTotal = data.cart.reduce(
-        (acc, item) => acc + item.price_per_unit * item.quantity,
-        0,
-      );
-      this.setState({ total: calculatedTotal });
-    } else {
-      setCartNumber(0);
-      this.setState({ total: 0 });
-    }
   }
 
   processAttributes(attributesList) {
@@ -90,256 +53,292 @@ class CartModal extends Component {
     return attributesMap;
   }
 
-  handleUpdate(cartitemId, quantity) {
-    this.props.updateCartItem({
-      variables: { cartitemId, quantity },
-    });
-    console.log("Updated item in cart");
-  }
-
-  handleDelete(cartitemId) {
-    this.props.deleteCartItem({ variables: { cartitemId } });
-    console.log("Deleted item from cart");
-  }
-
-  handlePlaceOrder(total) {
+  handlePlaceOrder(total, clearCart) {
     this.props.placeOrder({
       variables: { total },
     });
     this.setState({ showValidation: true });
+    clearCart();
   }
 
+  getAttributeValue = (item, attributeName) => {
+    const attribute = item.selectedAttributes.find(
+      (attr) => attr.name === attributeName,
+    );
+    return attribute ? attribute.value : "Not specified";
+  };
+
   render() {
-    const { showModal, data, loading, error, attributeData } = this.props;
-    const { total, showValidation, validationMessage } = this.state;
+    const { showModal, loading, error, attributeData } = this.props;
+    const { showValidation, validationMessage } = this.state;
 
     const attributesMap = attributeData?.getAllAttributes
       ? this.processAttributes(attributeData.getAllAttributes)
       : {};
-
     return (
-      <>
-        <div
-          className={`absolute right-7 top-12 w-auto bg-white shadow-lg rounded-lg p-4 transition-transform duration-300 ${
-            showModal ? "scale-100" : "scale-0"
-          } origin-top-right z-50`}
-        >
-          <h2 className="text-xl font-semibold mb-4 text-black">
-            Shopping Cart
-          </h2>
-          {loading && (
-            <div className="flex justify-center items-center h-32">
-              <AiOutlineLoading3Quarters className="animate-spin text-green-600 text-4xl" />
-            </div>
-          )}
-          {error && <p className="text-red-500">Error: {error.message}</p>}
-          {data && data.cart && data.cart.length > 0 ? (
-            <div>
-              {data.cart.map((item) => {
-                const itemAttributes = attributesMap[item.productID] || {};
-                return (
-                  <div key={item.cartitemID} className="mb-4">
-                    <img
-                      src={item.first_image}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover"
-                    />
-                    <p className="text-black">{item.name}</p>
+      <CartContext.Consumer>
+        {({
+          cartItems,
+          cartTotal,
+          updateCartItemQuantity,
+          clearItemFromCart,
+          ClearCart,
+        }) => (
+          <>
+            <div
+              className={`absolute right-7 top-12 w-auto bg-white shadow-lg rounded-lg p-4 transition-transform duration-300 ${
+                showModal ? "scale-100" : "scale-0"
+              } origin-top-right z-50`}
+            >
+              <h2 className="text-xl font-semibold mb-4 text-black">
+                Shopping Cart
+              </h2>
+              {loading && (
+                <div className="flex justify-center items-center h-32">
+                  <AiOutlineLoading3Quarters className="animate-spin text-green-600 text-4xl" />
+                </div>
+              )}
+              {error && <p className="text-red-500">Error: {error.message}</p>}
+              {cartItems?.length > 0 ? (
+                <div>
+                  {cartItems?.map((item, idx) => {
+                    const itemAttributes = attributesMap[item.id] || {};
+                    const hasTouchId = this.getAttributeValue(item, "touchId");
+                    const hasUsb3Ports = this.getAttributeValue(
+                      item,
+                      "usb3Ports",
+                    );
 
-                    {item.touch_id && item.usb_port && (
-                      <div>
-                        <h2 className="text-lg font-semibold mb-2">
-                          Touch ID in keyboard:
-                        </h2>
-                        <p>{item.touch_id}</p>
+                    return (
+                      <div key={idx} className="mb-4">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-16 h-16 object-cover"
+                        />
+                        <p className="text-black">{item.name}</p>
 
-                        <h2 className="text-lg font-semibold mb-2">
-                          USB 3 ports:
-                        </h2>
-                        <p>{item.usb_port}</p>
-                      </div>
-                    )}
+                        {itemAttributes["touch id in keyboard"] &&
+                          itemAttributes["with usb 3 ports"] && (
+                            <div>
+                              <h2 className="text-lg font-semibold mb-2 flex items-center">
+                                Touch ID in keyboard:{" "}
+                                {hasTouchId ? (
+                                  <FaCheck className="text-green-500 ml-2" />
+                                ) : (
+                                  <ImCross className="text-red-500 ml-2" />
+                                )}
+                              </h2>
 
-                    {item.color && (
-                      <>
-                        <h2 className="text-lg font-semibold mb-2">COLOR:</h2>
-                        <div
-                          className="flex space-x-2"
-                          data-testid={`cart-item-attribute-color`}
-                        >
-                          {itemAttributes.color?.map((color) => (
-                            <button
-                              key={color}
-                              className={`w-8 h-8 rounded-full ${
-                                colorClassMap[color.toLowerCase()]
-                              } ${
-                                item.color === color
-                                  ? "border-green-400 border-2 scale-125"
-                                  : "border-black"
-                              } border-2 `}
-                              data-testid={`cart-item-attribute-color-${color.toLowerCase()}${
-                                item.color === color ? "-selected" : ""
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
+                              <h2 className="text-lg font-semibold mb-2 flex items-center">
+                                USB 3 ports:{" "}
+                                {hasUsb3Ports ? (
+                                  <FaCheck className="text-green-500 ml-2" />
+                                ) : (
+                                  <ImCross className="text-red-500 ml-2" />
+                                )}
+                              </h2>
+                            </div>
+                          )}
 
-                    {item.size && (
-                      <>
-                        <h2 className="text-lg font-semibold mb-2">SIZE:</h2>
-                        <div
-                          className="flex space-x-2"
-                          data-testid={`cart-item-attribute-size`}
-                        >
-                          {itemAttributes.size?.map((size) => (
-                            <button
-                              key={size}
-                              className={`border px-4 py-2  ${
-                                item.size === size
-                                  ? "border-black bg-black text-white scale-110 transition-transform duration-300"
-                                  : "border-gray-300"
-                              }`}
-                              data-testid={`cart-item-attribute-size-${size.toLowerCase()}${
-                                item.size === size ? "-selected" : ""
-                              }`}
+                        {itemAttributes.color && (
+                          <>
+                            <h2 className="text-lg font-semibold mb-2">
+                              COLOR:
+                            </h2>
+                            <div
+                              className="flex space-x-2"
+                              data-testid={`cart-item-attribute-color`}
                             >
-                              {size}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
+                              {itemAttributes.color?.map((color) => {
+                                const selectedColor = this.getAttributeValue(
+                                  item,
+                                  "color",
+                                );
+                                return (
+                                  <button
+                                    key={color}
+                                    className={`w-8 h-8 rounded-full ${
+                                      colorClassMap[color.toLowerCase()]
+                                    } ${
+                                      selectedColor === color
+                                        ? "border-green-400 border-2 scale-125"
+                                        : "border-black"
+                                    } border-2 `}
+                                    data-testid={`cart-item-attribute-color-${color.toLowerCase()}${
+                                      item.color === color ? "-selected" : ""
+                                    }`}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </>
+                        )}
 
-                    {itemAttributes.capacity && (
-                      <div>
-                        <h2 className="text-lg font-semibold mb-2">
-                          CAPACITY:
-                        </h2>
-                        <div
-                          className="flex space-x-2"
-                          data-testid={`cart-item-attribute-capacity`}
-                        >
-                          {itemAttributes.capacity.map((capacity) => (
-                            <button
-                              key={capacity}
-                              className={`border px-4 py-2 ${
-                                item.capacity === capacity
-                                  ? "border-black bg-black text-white scale-110 transition-transform duration-300"
-                                  : "border-gray-300"
-                              }`}
-                              data-testid={`cart-item-attribute-capacity-${capacity.toLowerCase()}${
-                                item.capacity === capacity ? "-selected" : ""
-                              }`}
+                        {itemAttributes.size && (
+                          <>
+                            <h2 className="text-lg font-semibold mb-2">
+                              SIZE:
+                            </h2>
+                            <div
+                              className="flex space-x-2"
+                              data-testid={`cart-item-attribute-size`}
                             >
-                              {capacity}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                              {itemAttributes.size?.map((size) => {
+                                const selectedSize = this.getAttributeValue(
+                                  item,
+                                  "size",
+                                );
 
-                    <p className="text-gray-600 p-2">
-                      Price: {item.price_per_unit}
-                      {item.currency_symbol}
-                    </p>
-                    <div className="flex items-center space-x-4">
-                      <p className="pr-3 text-lg font-semibold ">Quantity</p>
-                      <button
-                        onClick={() =>
-                          this.handleUpdate(item.cartitemID, item.quantity - 1)
-                        }
-                        className={`bg-gray-200 px-4 py-2 ${
-                          item.quantity === 1
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-black text-white hover:bg-red-400"
-                        }`}
-                        disabled={item.quantity === 1}
-                        data-testid="cart-item-amount-decrease"
-                      >
-                        -
-                      </button>
-                      <p className="text-xl" data-testid="cart-item-amount">
-                        {item.quantity}
-                      </p>
-                      <button
-                        onClick={() =>
-                          this.handleUpdate(item.cartitemID, item.quantity + 1)
-                        }
-                        className="bg-gray-200 px-4 py-2  text-white hover:bg-green-400"
-                        data-testid="cart-item-amount-increase"
-                      >
-                        +
-                      </button>
-                    </div>
-                    <div>
-                      <FaTrashAlt
-                        className="ml-64 text-3xl text-green-500 hover:scale-110 hover:text-red-400  transition-transform duration-300"
-                        onClick={() => this.handleDelete(item.cartitemID)}
-                      />
-                    </div>
-                    <hr className="my-4 border-t border-gray-300" />
+                                return (
+                                  <button
+                                    key={size}
+                                    className={`border px-4 py-2  ${
+                                      selectedSize === size
+                                        ? "border-black bg-black text-white scale-110 transition-transform duration-300"
+                                        : "border-gray-300"
+                                    }`}
+                                    data-testid={`cart-item-attribute-size-${size.toLowerCase()}${
+                                      selectedSize === size ? "-selected" : ""
+                                    }`}
+                                  >
+                                    {size}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </>
+                        )}
+
+                        {itemAttributes.capacity && (
+                          <div>
+                            <h2 className="text-lg font-semibold mb-2">
+                              CAPACITY:
+                            </h2>
+                            <div
+                              className="flex space-x-2"
+                              data-testid={`cart-item-attribute-capacity`}
+                            >
+                              {itemAttributes.capacity?.map((capacity) => {
+                                const selectedCapacity = this.getAttributeValue(
+                                  item,
+                                  "capacity",
+                                );
+                                return (
+                                  <button
+                                    key={capacity}
+                                    className={`border px-4 py-2 ${
+                                      selectedCapacity === capacity
+                                        ? "border-black bg-black text-white scale-110 transition-transform duration-300"
+                                        : "border-gray-300"
+                                    }`}
+                                    data-testid={`cart-item-attribute-capacity-${capacity.toLowerCase()}${
+                                      selectedCapacity === capacity
+                                        ? "-selected"
+                                        : ""
+                                    }`}
+                                  >
+                                    {capacity}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        <p className="text-gray-600 p-2">
+                          Price: {item.price}$
+                        </p>
+                        <div className="flex items-center space-x-4">
+                          <p className="pr-3 text-lg font-semibold ">
+                            Quantity
+                          </p>
+                          <button
+                            onClick={() => updateCartItemQuantity(idx, -1)}
+                            className={`bg-gray-200 px-4 py-2 ${
+                              item.quantity === 1
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-black text-white hover:bg-red-400"
+                            }`}
+                            disabled={item.quantity === 1}
+                            data-testid="cart-item-amount-decrease"
+                          >
+                            -
+                          </button>
+                          <p className="text-xl" data-testid="cart-item-amount">
+                            {item.quantity}
+                          </p>
+                          <button
+                            onClick={() => updateCartItemQuantity(idx, 1)}
+                            className="bg-gray-200 px-4 py-2  text-white hover:bg-green-400"
+                            data-testid="cart-item-amount-increase"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div>
+                          <FaTrashAlt
+                            className="ml-64 text-3xl text-green-500 hover:scale-110 hover:text-red-400  transition-transform duration-300"
+                            onClick={() => clearItemFromCart(idx)}
+                          />
+                        </div>
+                        <hr className="my-4 border-t border-gray-300" />
+                      </div>
+                    );
+                  })}
+
+                  <p className="font-bold text-lg" data-testid="cart-total">
+                    Total: {cartTotal.toFixed(2)}$
+                  </p>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() =>
+                        this.handlePlaceOrder(cartTotal, ClearCart)
+                      }
+                      className="bg-green-500 text-white px-6 py-2 w-full rounded-lg mt-4 hover:scale-110 transition-transform duration-300 hover:bg-green-600"
+                    >
+                      Place Order
+                    </button>
                   </div>
-                );
-              })}
-
-              <p className="font-bold text-lg" data-testid="cart-total">
-                Total: {total.toFixed(2)}$
-              </p>
-              <div className="flex justify-center">
-                <button
-                  onClick={() => this.handlePlaceOrder(total)}
-                  className="bg-green-500 text-white px-6 py-2 w-full rounded-lg mt-4 hover:scale-110 transition-transform duration-300 hover:bg-green-600"
-                >
-                  Place Order
-                </button>
-              </div>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-gray-500">Your cart is empty.</p>
+                  <div className="flex justify-center">
+                    <button
+                      disabled={true}
+                      className="bg-gray-500 text-white px-6 py-2 w-full rounded-lg mt-4 hover:scale-110 transition-transform duration-300"
+                    >
+                      Place Order
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          ) : (
-            <div>
-              <p className="text-gray-500">Your cart is empty.</p>
-              <div className="flex justify-center">
-                <button
-                  disabled={true}
-                  className="bg-gray-500 text-white px-6 py-2 w-full rounded-lg mt-4 hover:scale-110 transition-transform duration-300"
-                >
-                  Place Order
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
 
-        {showValidation && (
-          <Popup
-            icon={FaCheckCircle}
-            message={validationMessage}
-            showPopup={showValidation}
-            onClose={() => this.setState({ showValidation: false })}
-          />
+            {showValidation && (
+              <Popup
+                icon={FaCheckCircle}
+                message={validationMessage}
+                showPopup={showValidation}
+                onClose={() => this.setState({ showValidation: false })}
+              />
+            )}
+          </>
         )}
-      </>
+      </CartContext.Consumer>
     );
   }
 }
 
 const CartModalWithQueries = (props) => {
-  const { data, loading, error } = useQuery(VIEW_CART_QUERY);
   const { data: attributeData } = useQuery(ATTRIBUTE_QUERY);
-  const [deleteCartItem] = useMutation(DELETE_CART_ITEM_MUTATION);
-  const [updateCartItem] = useMutation(UPDATE_CART_ITEM_MUTATION);
   const [placeOrder] = useMutation(PLACE_ORDER_MUTATION);
 
   return (
     <CartModal
       {...props}
-      data={data}
-      loading={loading}
-      error={error}
       attributeData={attributeData}
-      deleteCartItem={deleteCartItem}
-      updateCartItem={updateCartItem}
       placeOrder={placeOrder}
     />
   );

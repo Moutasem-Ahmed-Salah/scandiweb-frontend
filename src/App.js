@@ -13,6 +13,9 @@ import { useRoutes, useNavigate } from "react-router-dom";
 import HomePage from "./Components/HomePage";
 import ProductDetails from "./Components/ProductDetails";
 import CartModal from "./Modals/CartModal";
+import { CartContext } from "./Contexts/CartContext";
+import { useContext } from "react";
+
 import "./App.css";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -46,8 +49,8 @@ function App() {
   const [category, setCategory] = useState("");
   const [isChanging, setIsChanging] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [cartNumber, setCartNumber] = useState(0);
   const navigate = useNavigate();
+  const { cartCount } = useContext(CartContext);
 
   const handleCategoryChange = (categoryName) => {
     if (category !== categoryName) {
@@ -114,7 +117,7 @@ function App() {
               onClick={() => setShowModal(true)}
             />
             <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {cartNumber}
+              {cartCount}
             </span>
           </li>
         </ul>
@@ -124,11 +127,7 @@ function App() {
             onClick={() => setShowModal(false)}
           ></div>
         )}
-        <CartModal
-          showModal={showModal}
-          setShowModal={setShowModal}
-          setCartNumber={setCartNumber}
-        />
+        <CartModal showModal={showModal} setShowModal={setShowModal} />
         {routes}
       </div>
     </ApolloProvider>
