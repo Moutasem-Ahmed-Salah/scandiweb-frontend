@@ -328,7 +328,7 @@ class ProductDetails extends Component {
                             onClick={() =>
                               this.setState({ selectedColor: color })
                             }
-                            className={`w-8 h-8 rounded-full ${colorClassMap[color.toLowerCase()]} ${
+                            className={`w-8 h-8  ${colorClassMap[color.toLowerCase()]} ${
                               selectedColor === color
                                 ? "border-green-400 scale-125"
                                 : "border-black"
