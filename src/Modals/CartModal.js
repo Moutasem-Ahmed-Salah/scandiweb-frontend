@@ -53,9 +53,11 @@ class CartModal extends Component {
     return attributesMap;
   }
 
-  handlePlaceOrder(total, clearCart) {
+  handlePlaceOrder(total, clearCart, cartItems) {
+    const orderDetails = cartItems.map((item) => JSON.stringify(item));
+
     this.props.placeOrder({
-      variables: { total },
+      variables: { total, orderDetails },
     });
     this.setState({ showValidation: true });
     clearCart();
@@ -86,9 +88,9 @@ class CartModal extends Component {
         }) => (
           <>
             <div
-              className={`absolute right-7 top-12 w-auto bg-white shadow-lg rounded-lg p-4 transition-transform duration-300 ${
+              className={`absolute right-7 top-12 mt-4 w-auto bg-white shadow-lg rounded-lg p-4 transition-transform duration-300 ${
                 showModal ? "scale-100" : "scale-0"
-              } origin-top-right z-50`}
+              } origin-top-right z-20`}
             >
               <h2 className="text-xl font-semibold mb-4 text-black">
                 Shopping Cart
@@ -103,10 +105,13 @@ class CartModal extends Component {
                 <div>
                   {cartItems?.map((item, idx) => {
                     const itemAttributes = attributesMap[item.id] || {};
-                    const hasTouchId = this.getAttributeValue(item, "touchId");
+                    const hasTouchId = this.getAttributeValue(
+                      item,
+                      "touch id in keyboard",
+                    );
                     const hasUsb3Ports = this.getAttributeValue(
                       item,
-                      "usb3Ports",
+                      "with usb 3 ports",
                     );
 
                     return (
@@ -114,7 +119,7 @@ class CartModal extends Component {
                         <img
                           src={item.image}
                           alt={item.name}
-                          className="w-16 h-16 object-cover"
+                          className="w-16 h-16 object-contain"
                         />
                         <p className="text-black">{item.name}</p>
 
@@ -123,7 +128,7 @@ class CartModal extends Component {
                             <div>
                               <h2 className="text-lg font-semibold mb-2 flex items-center">
                                 Touch ID in keyboard:{" "}
-                                {hasTouchId ? (
+                                {hasTouchId === "Yes" ? (
                                   <FaCheck className="text-green-500 ml-2" />
                                 ) : (
                                   <ImCross className="text-red-500 ml-2" />
@@ -132,7 +137,7 @@ class CartModal extends Component {
 
                               <h2 className="text-lg font-semibold mb-2 flex items-center">
                                 USB 3 ports:{" "}
-                                {hasUsb3Ports ? (
+                                {hasUsb3Ports === "Yes" ? (
                                   <FaCheck className="text-green-500 ml-2" />
                                 ) : (
                                   <ImCross className="text-red-500 ml-2" />
@@ -293,7 +298,7 @@ class CartModal extends Component {
                   <div className="flex justify-center">
                     <button
                       onClick={() =>
-                        this.handlePlaceOrder(cartTotal, ClearCart)
+                        this.handlePlaceOrder(cartTotal, ClearCart, cartItems)
                       }
                       className="bg-green-500 text-white px-6 py-2 w-full rounded-lg mt-4 hover:scale-110 transition-transform duration-300 hover:bg-green-600"
                     >

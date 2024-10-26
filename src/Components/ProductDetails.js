@@ -118,16 +118,26 @@ class ProductDetails extends Component {
 
     let hastouchId = hasTouchId;
     let hasUsb3Port = hasUsb3Ports;
+    let TouchId = null;
+    let Usb3Ports = null;
     if (productId !== "apple-imac-2021") {
       hastouchId = null;
     } else {
-      hastouchId = hasTouchId;
+      hasTouchId ? (TouchId = "Yes") : (TouchId = "No");
     }
     if (productId !== "apple-imac-2021") {
       hasUsb3Port = null;
     } else {
-      hasUsb3Port = hasUsb3Ports;
+      hasUsb3Port ? (Usb3Ports = "Yes") : (Usb3Ports = "No");
     }
+
+    const selectedAttributes = [
+      { name: "color", value: selectedColor },
+      { name: "size", value: selectedSize },
+      { name: "capacity", value: selectedCapacity },
+      { name: "touch id in keyboard", value: TouchId },
+      { name: "with usb 3 ports", value: Usb3Ports },
+    ].filter((attribute) => attribute.value !== null); // Filter out attributes with null values
 
     const productToAdd = {
       id: productId,
@@ -135,16 +145,11 @@ class ProductDetails extends Component {
       price: productPrice,
       image: productImage,
       quantity,
-      selectedAttributes: [
-        { name: "color", value: selectedColor },
-        { name: "size", value: selectedSize },
-        { name: "capacity", value: selectedCapacity },
-        { name: "touchId", value: hastouchId },
-        { name: "usb3Ports", value: hasUsb3Port },
-      ],
+      selectedAttributes,
     };
 
     addItemToCart(productToAdd, quantity);
+    console.log("From Add to Product:", productToAdd);
     this.setState({
       showValidation: true,
       validationMessage: `Added to cart ${quantity} items successfully`,

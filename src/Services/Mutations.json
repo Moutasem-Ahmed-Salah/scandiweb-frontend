@@ -1,6 +1,6 @@
 {
   "PLACE_ORDER_MUTATION": {
-    "mutation": "mutation PlaceOrder($total: Float!) { placeOrder(total: $total) }"
+    "mutation": "mutation PlaceOrder($total: Float!, $orderDetails: [String]!) { placeOrder(total: $total ,orderDetails: $orderDetails) }"
   },
   "DELETE_CART_ITEM_MUTATION": {
     "mutation": "mutation DeleteCartItem($cartitemId: Int!) { DeleteCartItem(cartitemID: $cartitemId) }"
