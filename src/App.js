@@ -136,9 +136,12 @@ function App() {
               </span>
             </li>
           </ul>
+          <div className="  z-50">
+            <CartModal showModal={showModal} setShowModal={setShowModal} />
+          </div>
         </div>
 
-        <div className="relative flex-1">
+        <div className="flex-1">
           {routes}
           {showModal && (
             <div
@@ -146,9 +149,6 @@ function App() {
               onClick={() => setShowModal(false)}
             ></div>
           )}
-        </div>
-        <div className="z-50">
-          <CartModal showModal={showModal} setShowModal={setShowModal} />
         </div>
       </div>
     </ApolloProvider>
