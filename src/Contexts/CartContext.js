@@ -1,4 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
+
+const CART_STORAGE_KEY = "shopping-cart";
+
 const areAttributesEqual = (attributes1, attributes2) => {
   if (attributes1.length !== attributes2.length) return false;
   return attributes1.every((attr1) => {
@@ -45,7 +48,19 @@ const updateCartItem = (cartItems, itemIdx, quantityChange) => {
 };
 
 const clearCart = () => {
+  localStorage.removeItem(CART_STORAGE_KEY);
   return [];
+};
+
+// Load cart items from localStorage
+const loadCartFromStorage = () => {
+  try {
+    const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+    return storedCart ? JSON.parse(storedCart) : [];
+  } catch (error) {
+    console.error("Error loading cart from localStorage:", error);
+    return [];
+  }
 };
 
 export const CartContext = createContext({
@@ -59,18 +74,24 @@ export const CartContext = createContext({
 });
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  // Initialize state directly from localStorage
+  const [cartItems, setCartItems] = useState(loadCartFromStorage());
   const [cartCount, setCartCount] = useState(0);
   const [cartTotal, setCartTotal] = useState(0);
 
+  // Update localStorage whenever cart items change
   useEffect(() => {
-    const newCartTotal = cartItems?.reduce(
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  useEffect(() => {
+    const newCartTotal = cartItems.reduce(
       (total, cartItem) => total + cartItem.quantity * cartItem.price,
       0,
     );
     setCartTotal(newCartTotal);
 
-    const newCartCount = cartItems?.length;
+    const newCartCount = cartItems.length;
     setCartCount(newCartCount);
   }, [cartItems]);
 
