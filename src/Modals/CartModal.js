@@ -94,10 +94,25 @@ class CartModal extends Component {
               } origin-top-right z-20 max-h-[calc(100vh-180px)] flex flex-col`}
             >
               {/* Fixed Header */}
-              <div className="p-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-black">
-                  Shopping Cart
-                </h2>
+              <div className="p-4 border-b flex space-x-2 items-center border-gray-200">
+                <h2 className="text-xl font-bold  text-black">My Bag,</h2>
+                <p className="text-lg">
+                  {cartItems.reduce((total, item) => total + item.quantity, 0) >
+                    0 && (
+                    <>
+                      {cartItems.reduce(
+                        (total, item) => total + item.quantity,
+                        0,
+                      )}{" "}
+                      {cartItems.reduce(
+                        (total, item) => total + item.quantity,
+                        0,
+                      ) === 1
+                        ? "item"
+                        : "items"}
+                    </>
+                  )}
+                </p>
               </div>
 
               {/* Scrollable Content */}

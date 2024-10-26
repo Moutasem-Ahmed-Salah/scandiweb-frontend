@@ -129,7 +129,7 @@ class HomePage extends Component {
                       return (
                         <div
                           key={product.product_id}
-                          className={`relative flex flex-col items-center transition-opacity duration-300 hover:border hover:border-green-500 rounded-lg  ${
+                          className={`relative flex flex-col items-center transition-transform duration-300 hover:shadow-2xl hover:border  rounded-lg  ${
                             this.props.isChanging ? "opacity-0" : "opacity-100"
                           } `}
                           onClick={() =>
@@ -154,7 +154,7 @@ class HomePage extends Component {
                               <img
                                 src={product.first_image}
                                 alt={product.name}
-                                className={`w-full h-full object-contain mt-2 ${
+                                className={`w-full h-full object-contain mt-2  ${
                                   !product.in_stock ? "opacity-50" : ""
                                 }`}
                               />
