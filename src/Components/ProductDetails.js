@@ -149,7 +149,6 @@ class ProductDetails extends Component {
     };
 
     addItemToCart(productToAdd, quantity);
-    console.log("From Add to Product:", productToAdd);
     this.setState({
       showValidation: true,
       validationMessage: `Added to cart ${quantity} items successfully`,

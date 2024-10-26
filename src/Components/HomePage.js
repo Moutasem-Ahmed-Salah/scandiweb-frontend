@@ -33,6 +33,7 @@ class HomePage extends Component {
       quickShopData: null,
       quickShopLoading: false,
       quickShopError: null,
+      loadingProductId: null, // Add this to track which product is loading
     };
     this.handleImageClick = this.handleImageClick.bind(this);
     this.handleQuickShop = this.handleQuickShop.bind(this);
@@ -69,15 +70,16 @@ class HomePage extends Component {
   async handleQuickShop(e, productId, client, addItemToCart, cartItems) {
     e.stopPropagation();
 
-    this.setState({ quickShopLoading: true, quickShopError: null });
+    this.setState({
+      quickShopLoading: true,
+      quickShopError: null,
+      loadingProductId: productId,
+    });
+
     try {
       const { data } = await client.query({
         query: PRODUCT_DETAILS_QUERY,
         variables: { productDetailsId: productId },
-      });
-      this.setState({
-        quickShopData: data.productDetails,
-        quickShopLoading: false,
       });
 
       const productToAdd = {
@@ -92,16 +94,19 @@ class HomePage extends Component {
       };
 
       addItemToCart(productToAdd, 1);
-      console.log(cartItems);
-      console.log("From QuickShop", productToAdd);
     } catch (error) {
-      this.setState({ quickShopError: error, quickShopLoading: false });
+      this.setState({ quickShopError: error });
+    } finally {
+      this.setState({
+        quickShopLoading: false,
+        loadingProductId: null,
+      });
     }
   }
 
   render() {
     const { data, loading, error } = this.props;
-    const { hoveredProductId } = this.state;
+    const { hoveredProductId, loadingProductId } = this.state;
 
     if (error) return <pre>{error.message}</pre>;
 
@@ -149,7 +154,7 @@ class HomePage extends Component {
                               <img
                                 src={product.first_image}
                                 alt={product.name}
-                                className={`w-full h-full object-contain  mt-2 ${
+                                className={`w-full h-full object-contain mt-2 ${
                                   !product.in_stock ? "opacity-50" : ""
                                 }`}
                               />
@@ -172,8 +177,15 @@ class HomePage extends Component {
                                       cartItems,
                                     )
                                   }
+                                  disabled={
+                                    loadingProductId === product.product_id
+                                  }
                                 >
-                                  <FaCartArrowDown />
+                                  {loadingProductId === product.product_id ? (
+                                    <AiOutlineLoading3Quarters className="animate-spin" />
+                                  ) : (
+                                    <FaCartArrowDown />
+                                  )}
                                 </button>
                               )}
                           </div>

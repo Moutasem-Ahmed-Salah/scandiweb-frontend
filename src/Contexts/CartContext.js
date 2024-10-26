@@ -48,16 +48,11 @@ const clearCart = () => {
   return [];
 };
 
-const testingContext = () => {
-  console.log("Testing");
-};
-
 export const CartContext = createContext({
   addItemToCart: () => {},
   ClearCart: () => {},
   clearItemFromCart: () => {},
   updateCartItemQuantity: () => {},
-  testingContext: () => {},
   cartItems: [],
   cartCount: 0,
   cartTotal: 0,
@@ -100,7 +95,6 @@ export const CartProvider = ({ children }) => {
     ClearCart,
     clearItemFromCart,
     updateCartItemQuantity,
-    testingContext,
     cartItems,
     cartCount,
     cartTotal,
